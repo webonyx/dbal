@@ -333,6 +333,18 @@ class Comparator
                 }
             }
         }
+
+        //detect column change manually
+        foreach ($tableDifferences->changedColumns as $changeColumnName => $changeColumnDiff) {
+            $changeColumn = $changeColumnDiff->column;
+            if ($changeColumn->hasNewName() && !isset($tableDifferences->renamedColumns[$changeColumnName])) {
+                $renameColumn = $changeColumn->copy();
+                $tableDifferences->renamedColumns[$changeColumnName] = $renameColumn;
+                unset($tableDifferences->addedColumns[$changeColumnName]);
+                unset($tableDifferences->removedColumns[$changeColumnName]);
+                unset($tableDifferences->changedColumns[$changeColumnName]);
+            }
+        }
     }
 
     /**
@@ -440,12 +452,16 @@ class Comparator
             }
         }
 
-        if ($column2->getFirst()) {
+        if ($column2->isFirst()) {
             $changedProperties[] = 'first';
         }
 
-        if (!empty($column2->getAfter())) {
+        if ($column2->isAfter()) {
             $changedProperties[] = 'after';
+        }
+
+        if($column2->hasNewName()){
+            $changedProperties[] = 'rename';
         }
 
         $platformOptions1 = $column1->getPlatformOptions();

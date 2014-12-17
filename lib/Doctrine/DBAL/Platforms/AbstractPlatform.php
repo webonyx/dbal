@@ -2226,11 +2226,12 @@ abstract class AbstractPlatform
      */
     public function getColumnOrderSQL(Column $column)
     {
-        if (!empty($column->getColumnDefinition())) {
+        $columnDefination = $column->getColumnDefinition();
+        if (!empty($columnDefination)) {
             return '';
         } else {
-            $first = ($column->getFirst()) ? ' FIRST ' : '';
-            $after = (!empty($column->getAfter())) ? ' AFTER ' . $column->getAfter() . ' ' : '';
+            $first = ($column->isFirst()) ? ' FIRST ' : '';
+            $after = $column->isAfter() ? ' AFTER ' . $column->getAfter() . ' ' : '';
             return ($first . $after);
         }
     }

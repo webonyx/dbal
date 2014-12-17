@@ -105,6 +105,11 @@ class Column extends AbstractAsset
      */
     protected  $_after = null;
 
+    /**
+     * @var string
+     */
+    protected  $_newName = null;
+
 
     /**
      * Creates a new Column.
@@ -128,7 +133,7 @@ class Column extends AbstractAsset
     public function setOptions(array $options)
     {
         foreach ($options as $name => $value) {
-            $method = "set".$name;
+            $method = "set".ucfirst($name);
             if (method_exists($this, $method)) {
                 $this->$method($value);
             }
@@ -480,13 +485,14 @@ class Column extends AbstractAsset
     public function setFirst($first)
     {
         $this->_first = (bool)$first;
+        $this->_after = null;
         return $this;
     }
 
     /**
      * @return bool
      */
-    public function getFirst()
+    public function isFirst()
     {
         return $this->_first;
     }
@@ -498,6 +504,7 @@ class Column extends AbstractAsset
     public function setAfter($after)
     {
         $this->_after = $after;
+        $this->_first = false;
         return $this;
     }
 
@@ -510,7 +517,40 @@ class Column extends AbstractAsset
     }
 
     /**
-     * @param \Doctrine\DBAL\Schema\Visitor\Visitor $visitor
+     * @return bool
+     */
+    public function isAfter()
+    {
+        return !empty($this->_after);
+    }
+
+    /**
+     * @param string $newName
+     * @return $this
+     */
+    public function renameTo($newName)
+    {
+        $this->_newName = $newName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function hasNewName()
+    {
+        return !empty($this->_newName);
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewName(){
+        return $this->_newName;
+    }
+
+    /**
+     * @param Visitor|Visitor\Visitor $visitor
      */
     public function visit(Visitor $visitor)
     {
@@ -537,6 +577,29 @@ class Column extends AbstractAsset
             'comment' => $this->_comment,
             'first'   => $this->_first,
             'after'   => $this->_after,
+            'newName'   => $this->_newName,
         ), $this->_platformOptions, $this->_customSchemaOptions);
+    }
+
+    /**
+     */
+    public function copy()
+    {
+        $newColumn = new self($this->getNewName(), $this->getType());
+        $newColumn
+            ->setDefault($this->getDefault())
+            ->setNotnull($this->getNotnull())
+            ->setLength($this->getLength())
+            ->setPrecision($this->getPrecision())
+            ->setScale($this->getScale())
+            ->setFixed($this->getFixed())
+            ->setUnsigned($this->getUnsigned())
+            ->setAutoincrement($this->getAutoincrement())
+            ->setColumnDefinition($this->getColumnDefinition())
+            ->setComment($this->getComment())
+            ->setPlatformOptions($this->getPlatformOptions())
+            ->setCustomSchemaOptions($this->getCustomSchemaOptions());
+
+        return $newColumn;
     }
 }
