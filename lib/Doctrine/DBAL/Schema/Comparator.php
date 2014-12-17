@@ -440,6 +440,14 @@ class Comparator
             }
         }
 
+        if ($column2->getFirst()) {
+            $changedProperties[] = 'first';
+        }
+
+        if (!empty($column2->getAfter())) {
+            $changedProperties[] = 'after';
+        }
+
         $platformOptions1 = $column1->getPlatformOptions();
         $platformOptions2 = $column2->getPlatformOptions();
 

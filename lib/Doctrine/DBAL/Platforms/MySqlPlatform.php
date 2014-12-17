@@ -538,7 +538,8 @@ class MySqlPlatform extends AbstractPlatform
 
             $columnArray = $column->toArray();
             $columnArray['comment'] = $this->getColumnComment($column);
-            $queryParts[] = 'ADD ' . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray);
+            $queryParts[] = 'ADD ' . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray)
+                                   . $this->getColumnOrderSQL($column);
         }
 
         foreach ($diff->removedColumns as $column) {
@@ -568,7 +569,8 @@ class MySqlPlatform extends AbstractPlatform
 
             $columnArray['comment'] = $this->getColumnComment($column);
             $queryParts[] =  'CHANGE ' . ($columnDiff->getOldColumnName()->getQuotedName($this)) . ' '
-                    . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray);
+                    . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray)
+                    .$this->getColumnOrderSQL($column);
         }
 
         foreach ($diff->renamedColumns as $oldColumnName => $column) {
@@ -580,7 +582,8 @@ class MySqlPlatform extends AbstractPlatform
             $columnArray = $column->toArray();
             $columnArray['comment'] = $this->getColumnComment($column);
             $queryParts[] =  'CHANGE ' . $oldColumnName->getQuotedName($this) . ' '
-                    . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray);
+                    . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray)
+                    . $this->getColumnOrderSQL($column);
         }
 
         if (isset($diff->addedIndexes['primary'])) {

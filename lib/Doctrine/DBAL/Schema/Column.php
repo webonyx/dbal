@@ -96,6 +96,17 @@ class Column extends AbstractAsset
     protected $_customSchemaOptions = array();
 
     /**
+     * @var bool
+     */
+    protected  $_first = false;
+
+    /**
+     * @var string
+     */
+    protected  $_after = null;
+
+
+    /**
      * Creates a new Column.
      *
      * @param string $columnName
@@ -463,6 +474,50 @@ class Column extends AbstractAsset
     }
 
     /**
+     * @param bool $first
+     * @return $this
+     */
+    public function setFirst($first)
+    {
+        $this->_first = (bool)$first;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getFirst()
+    {
+        return $this->_first;
+    }
+
+    /**
+     * @param string $after
+     * @return $this
+     */
+    public function setAfter($after)
+    {
+        $this->_after = $after;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAfter()
+    {
+        return $this->_after;
+    }
+
+    /**
+     * @param \Doctrine\DBAL\Schema\Visitor\Visitor $visitor
+     */
+    public function visit(Visitor $visitor)
+    {
+        $visitor->accept($this);
+    }
+
+    /**
      * @return array
      */
     public function toArray()
@@ -480,6 +535,8 @@ class Column extends AbstractAsset
             'autoincrement' => $this->_autoincrement,
             'columnDefinition' => $this->_columnDefinition,
             'comment' => $this->_comment,
+            'first'   => $this->_first,
+            'after'   => $this->_after,
         ), $this->_platformOptions, $this->_customSchemaOptions);
     }
 }

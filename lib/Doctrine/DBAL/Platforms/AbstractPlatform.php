@@ -2218,6 +2218,24 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Gets the order of a passed column.
+     *
+     * @param \Doctrine\DBAL\Schema\Column $column
+     *
+     * @return string
+     */
+    public function getColumnOrderSQL(Column $column)
+    {
+        if (!empty($column->getColumnDefinition())) {
+            return '';
+        } else {
+            $first = ($column->getFirst()) ? ' FIRST ' : '';
+            $after = (!empty($column->getAfter())) ? ' AFTER ' . $column->getAfter() . ' ' : '';
+            return ($first . $after);
+        }
+    }
+
+    /**
      * Returns the SQL snippet that declares a floating point column of arbitrary precision.
      *
      * @param array $columnDef
